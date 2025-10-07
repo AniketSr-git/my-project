@@ -86,32 +86,32 @@ def perceptron(feature_matrix, labels, T):
 
 def average_perceptron(feature_matrix, labels, T):
     """
-    Runs the average perceptron algorithm on a given dataset.  Runs `T`
-    iterations through the dataset (we do not stop early) and therefore
-    averages over `T` many parameter values.
-
-    NOTE: Please use the previously implemented functions when applicable.
-    Do not copy paste code from previous parts.
-
-    NOTE: It is more difficult to keep a running average than to sum and
-    divide.
-
-    Args:
-        `feature_matrix` -  A numpy matrix describing the given data. Each row
-            represents a single data point.
-        `labels` - A numpy array where the kth element of the array is the
-            correct classification of the kth row of the feature matrix.
-        `T` - An integer indicating how many times the perceptron algorithm
-            should iterate through the feature matrix.
-
-    Returns a tuple containing two values:
-        the average feature-coefficient parameter `theta` as a numpy array
-            (averaged over T iterations through the feature matrix)
-        the average offset parameter `theta_0` as a floating point number
-            (averaged also over T iterations through the feature matrix).
+    Average perceptron over T passes.
+    After every single-step update (or no-update), accumulate (theta, theta_0).
+    Return the average parameters.
     """
-    # Your code here
-    raise NotImplementedError
+    n_samples, n_features = feature_matrix.shape
+    theta = np.zeros(n_features)
+    theta_0 = 0.0
+
+    theta_sum = np.zeros(n_features)
+    theta_0_sum = 0.0
+    count = 0  # number of steps over all examples and epochs
+
+    for _ in range(T):
+        for i in get_order(n_samples):
+            x_i = feature_matrix[i]
+            y_i = labels[i]
+            # reuse single-step update
+            theta, theta_0 = perceptron_single_step_update(x_i, y_i, theta, theta_0)
+
+            # accumulate after this step
+            theta_sum += theta
+            theta_0_sum += theta_0
+            count += 1
+
+    # average
+    return theta_sum / count, float(theta_0_sum / count)
 
 
 def pegasos_single_step_update(
