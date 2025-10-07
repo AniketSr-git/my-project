@@ -114,35 +114,29 @@ def average_perceptron(feature_matrix, labels, T):
     return theta_sum / count, float(theta_0_sum / count)
 
 
-def pegasos_single_step_update(
-        feature_vector,
-        label,
-        L,
-        eta,
-        theta,
-        theta_0):
+def pegasos_single_step_update(feature_vector, label, L, eta, current_theta, current_theta_0):
     """
-    Updates the classification parameters `theta` and `theta_0` via a single
-    step of the Pegasos algorithm.  Returns new parameters rather than
-    modifying in-place.
+    One Pegasos update on a single example.
+    If y*(θ·x + θ0) <= 1:
+        θ ← (1 - ηL)θ + η y x
+        θ0 ← θ0 + η y
+    Else:
+        θ ← (1 - ηL)θ
+        θ0 unchanged
+    """
+    margin = label * (np.dot(current_theta, feature_vector) + current_theta_0)
 
-    Args:
-        `feature_vector` - A numpy array describing a single data point.
-        `label` - The correct classification of the feature vector.
-        `L` - The lamba value being used to update the parameters.
-        `eta` - Learning rate to update parameters.
-        `theta` - The old theta being used by the Pegasos
-            algorithm before this update.
-        `theta_0` - The old theta_0 being used by the
-            Pegasos algorithm before this update.
-    Returns:
-        a tuple where the first element is a numpy array with the value of
-        theta after the old update has completed and the second element is a
-        real valued number with the value of theta_0 after the old updated has
-        completed.
-    """
-    # Your code here
-    raise NotImplementedError
+    # Always apply regularization shrink
+    new_theta = (1 - eta * L) * current_theta
+    new_theta_0 = current_theta_0
+
+    # Hinge condition
+    if margin <= 1:
+        new_theta = new_theta + eta * label * feature_vector
+        new_theta_0 = new_theta_0 + eta * label
+
+    return new_theta, new_theta_0
+
 
 
 
