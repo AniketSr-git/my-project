@@ -1,8 +1,19 @@
 from string import punctuation, digits
 import numpy as np
 import random
+import utils
+import re
 
+def _fallback_extract_words(text: str):
+    # Lowercase and split on non-alphanumerics
+    return re.findall(r"[A-Za-z0-9]+", text.lower())
 
+# Try to resolve a tokenizer from utils, else use fallback
+EXTRACT_TOKENS = getattr(utils, "extract_words", None)
+if EXTRACT_TOKENS is None:
+    EXTRACT_TOKENS = getattr(utils, "tokenize", None)
+if EXTRACT_TOKENS is None:
+    EXTRACT_TOKENS = _fallback_extract_words
 
 #==============================================================================
 #===  PART I  =================================================================
@@ -226,53 +237,31 @@ def extract_words(text):
 
 
 
-def bag_of_words(texts, remove_stopword=False):
-    """
-    NOTE: feel free to change this code as guided by Section 3 (e.g. remove
-    stopwords, add bigrams etc.)
-
-    Args:
-        `texts` - a list of natural language strings.
-    Returns:
-        a dictionary that maps each word appearing in `texts` to a unique
-        integer `index`.
-    """
-    # Your code here
-    raise NotImplementedError
-    
-    indices_by_word = {}  # maps word to unique index
+def bag_of_words(texts):
+    dictionary = {}
     for text in texts:
-        word_list = extract_words(text)
-        for word in word_list:
-            if word in indices_by_word: continue
-            if word in stopword: continue
-            indices_by_word[word] = len(indices_by_word)
+        for token in EXTRACT_TOKENS(text):
+            if token not in dictionary:
+                dictionary[token] = len(dictionary)
+    return dictionary
 
-    return indices_by_word
-
-
-
-def extract_bow_feature_vectors(reviews, indices_by_word, binarize=True):
-    """
-    Args:
-        `reviews` - a list of natural language strings
-        `indices_by_word` - a dictionary of uniquely-indexed words.
-    Returns:
-        a matrix representing each review via bag-of-words features.  This
-        matrix thus has shape (n, m), where n counts reviews and m counts words
-        in the dictionary.
-    """
-    # Your code here
-    feature_matrix = np.zeros([len(reviews), len(indices_by_word)], dtype=np.float64)
+def extract_bow_feature_vectors(reviews, dictionary, binarize=True):
+    n_samples = len(reviews)
+    n_features = len(dictionary)
+    X = np.zeros((n_samples, n_features))
     for i, text in enumerate(reviews):
-        word_list = extract_words(text)
-        for word in word_list:
-            if word not in indices_by_word: continue
-            feature_matrix[i, indices_by_word[word]] += 1
-    if binarize:
-        # Your code here
-        raise NotImplementedError
-    return feature_matrix
+        tokens = EXTRACT_TOKENS(text)
+        if binarize:
+            for tok in set(tokens):
+                j = dictionary.get(tok)
+                if j is not None:
+                    X[i, j] = 1
+        else:
+            for tok in tokens:
+                j = dictionary.get(tok)
+                if j is not None:
+                    X[i, j] += 1
+    return X
 
 
 
