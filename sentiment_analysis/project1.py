@@ -48,29 +48,19 @@ def hinge_loss_full(feature_matrix, labels, theta, theta_0):
 
 
 
-def perceptron_single_step_update(
-        feature_vector,
-        label,
-        current_theta,
-        current_theta_0):
+def perceptron_single_step_update(feature_vector, label, current_theta, current_theta_0):
     """
-    Updates the classification parameters `theta` and `theta_0` via a single
-    step of the perceptron algorithm.  Returns new parameters rather than
-    modifying in-place.
+    One perceptron update on a single example.
+    If y*(θ·x + θ0) <= 0, update:
+        θ ← θ + y*x
+        θ0 ← θ0 + y
+    Otherwise, leave parameters unchanged.
+    """
+    if label * (np.dot(current_theta, feature_vector) + current_theta_0) <= 0:
+        current_theta = current_theta + label * feature_vector
+        current_theta_0 = current_theta_0 + label
+    return current_theta, current_theta_0
 
-    Args:
-        feature_vector - A numpy array describing a single data point.
-        label - The correct classification of the feature vector.
-        current_theta - The current theta being used by the perceptron
-            algorithm before this update.
-        current_theta_0 - The current theta_0 being used by the perceptron
-            algorithm before this update.
-    Returns a tuple containing two values:
-        the updated feature-coefficient parameter `theta` as a numpy array
-        the updated offset parameter `theta_0` as a floating point number
-    """
-    # Your code here
-    raise NotImplementedError
 
 
 
