@@ -66,34 +66,21 @@ def perceptron_single_step_update(feature_vector, label, current_theta, current_
 
 def perceptron(feature_matrix, labels, T):
     """
-    Runs the full perceptron algorithm on a given set of data. Runs T
-    iterations through the data set: we do not stop early.
-
-    NOTE: Please use the previously implemented functions when applicable.
-    Do not copy paste code from previous parts.
-
-    Args:
-        `feature_matrix` - numpy matrix describing the given data. Each row
-            represents a single data point.
-        `labels` - numpy array where the kth element of the array is the
-            correct classification of the kth row of the feature matrix.
-        `T` - integer indicating how many times the perceptron algorithm
-            should iterate through the feature matrix.
-
-    Returns a tuple containing two values:
-        the feature-coefficient parameter `theta` as a numpy array
-            (found after T iterations through the feature matrix)
-        the offset parameter `theta_0` as a floating point number
-            (found also after T iterations through the feature matrix).
+    Runs the full perceptron algorithm for T passes over the data.
+    Initializes theta (shape: (n_features,)) and theta_0 = 0.0.
+    Uses get_order(n_samples) each epoch.
     """
-    # Your code here
-    raise NotImplementedError
-    for t in range(T):
-        for i in get_order(nsamples):
-            # Your code here
-            raise NotImplementedError
-    # Your code here
-    raise NotImplementedError
+    n_samples, n_features = feature_matrix.shape
+    theta = np.zeros(n_features)
+    theta_0 = 0.0
+
+    for _ in range(T):
+        for i in get_order(n_samples):
+            x_i = feature_matrix[i]
+            y_i = labels[i]
+            theta, theta_0 = perceptron_single_step_update(x_i, y_i, theta, theta_0)
+
+    return theta, float(theta_0)
 
 
 
