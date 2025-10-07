@@ -1,32 +1,86 @@
-Sentiment Analysis – Linear Classifiers (Project 1)
+Sentiment Analysis – Linear Classifiers
 
 
 
-Three linear classifiers on Amazon food reviews with unigram Bag-of-Words features.
+Overview
 
 
 
-Algorithms: Perceptron, Average Perceptron, Pegasos (SVM with ℓ2 regularization)
+This repository implements three linear classifiers to perform sentiment analysis on Amazon food reviews using a unigram Bag-of-Words (BoW) representation.
 
 
 
-Features: Unigram bag-of-words (binary or counts), optional stop-word removal
+Perceptron
 
 
 
-Data: reviews\_train.tsv, reviews\_val.tsv, reviews\_test.tsv
+Average Perceptron
 
 
 
-Repository Structure
+Pegasos (SVM via stochastic sub-gradient with L2 regularization)
 
 
 
-sentiment\_analysis/main.py — run accuracies (Problem 7), tuning (Problem 8), final eval, top unigrams
+The project covers feature extraction (binary and counts), optional stop-word removal, validation hyperparameter tuning, final test evaluation, and explainability via top unigrams.
 
 
 
-sentiment\_analysis/project1.py — algorithms + feature extraction (BoW, counts, stopwords toggle)
+Objective
+
+
+
+The goal is to build a compact, reproducible baseline for text classification and compare linear learners under consistent features. The pipeline demonstrates:
+
+
+
+Feature engineering trade-offs (binary vs counts, with/without stop-words)
+
+
+
+Practical tuning of T (epochs) and λ (Pegasos regularization)
+
+
+
+Clear explainability using weight-based top words
+
+
+
+Data and Techniques Used
+
+
+
+Data: Pre-split TSV files
+
+reviews\_train.tsv, reviews\_val.tsv, reviews\_test.tsv
+
+
+
+Features: Unigram BoW from training only, with binary or counts vectors
+
+
+
+Stop-words: Optional removal via stopwords.txt
+
+
+
+Algorithms: Perceptron, Average Perceptron, Pegasos (η = 1/√t, L2)
+
+
+
+Decision rule: (θ · x + θ₀) > 0 ⇒ +1, else −1
+
+
+
+Repository Layout and Components
+
+
+
+sentiment\_analysis/main.py — Problem 7 accuracies, Problem 8 tuning, final test evaluation, top unigrams
+
+
+
+sentiment\_analysis/project1.py — algorithms and feature extraction (BoW dictionary, binary and counts, stop-word toggle)
 
 
 
@@ -38,7 +92,7 @@ sentiment\_analysis/reviews\_\*.tsv, toy\_data.tsv, stopwords.txt
 
 
 
-docs/img/ — screenshots (add your PNGs here)
+images/ — screenshots referenced below (add your PNGs here)
 
 
 
@@ -46,111 +100,45 @@ README.md
 
 
 
-What’s Implemented
+Flow and Visuals
 
 
 
-Algorithms
+Row 1 (Sanity \& Tests)
 
 
 
-Hinge loss (single \& full)
+All implemented functions verified locally
 
 
 
-Perceptron: single-step update + full loop
 
 
+Row 2 (Model Intuition)
 
-Average Perceptron: parameter averaging
 
 
+Toy 2D dataset with decision boundary (Perceptron example)
 
-Pegasos: single-step + full (step size η = 1/√t, ℓ2 regularization)
 
 
 
-Feature Engineering
 
+Row 3 (Explainability)
 
 
-Unigram Bag-of-Words built from training only
 
+Top 10 most explanatory unigrams for the positive class (printed from main.py)
 
 
-Binary features (presence/absence) and Counts features
 
 
 
-Stop-words removal via stopwords.txt (toggle in project1.py)
+Results Summary
 
 
 
-Evaluation \& Tuning
-
-
-
-classify() with strict boundary rule (> 0 ⇒ +1, else −1)
-
-
-
-classifier\_accuracy() to train \& evaluate
-
-
-
-Tuning (Problem 8)
-
-
-
-Perceptron / Avg-Perceptron: T ∈ {1, 5, 10, 15, 25, 50}
-
-
-
-Pegasos: tune T at fixed λ = 0.01, then tune λ ∈ {0.001, 0.01, 0.1, 1, 10}
-
-
-
-Setup
-
-
-
-Activate env and install deps:
-
-
-
-conda activate myproj
-
-
-
-cd C:\\Users\\aniks\\my-project
-
-
-
-python -m pip install numpy matplotlib
-
-
-
-How To Run
-
-
-
-Run experiments:
-
-
-
-cd sentiment\_analysis
-
-
-
-python main.py
-
-
-
-Key results (your values may vary slightly):
-
-
-
-Problem 7 (T = 10, λ = 0.01) — validation
+Validation (Problem 7; T = 10, λ = 0.01):
 
 
 
@@ -166,7 +154,7 @@ Pegasos: 0.7900
 
 
 
-Problem 8 (tuning) — best validation
+Best after tuning (Problem 8):
 
 
 
@@ -182,11 +170,11 @@ Pegasos: T = 25, λ = 0.01 → 0.8060
 
 
 
-Final test (Pegasos, T=25, λ=0.01)
+Final Test (Pegasos, T = 25, λ = 0.01):
 
 
 
-Original dictionary: 0.8020
+Original dictionary (binary): 0.8020
 
 
 
@@ -198,141 +186,81 @@ Stop-words removed (counts): 0.7700
 
 
 
-Screenshots \& Plots
+Insights
 
 
 
-Add PNGs to docs/img/:
+Binary BoW outperforms counts for this dataset.
 
 
 
-docs/img/tests\_passed.png — green tests summary
+Stop-word removal slightly improves binary-feature accuracy.
 
 
 
-docs/img/perceptron\_plot.png — toy decision boundary
+Pegasos gives the strongest validation performance among the three.
 
 
 
-docs/img/top\_unigrams.png — optional table/screenshot
+Usage and Navigation
 
 
 
-Embed examples (after you add files):
+Environment
 
 
 
-Design Notes
+Activate conda env and install dependencies: numpy, matplotlib
 
 
 
-Why Pegasos? Decaying step + ℓ2 regularization gives stable convergence and best validation here.
+Run tests
 
 
 
-Binary vs Counts: Counts can overweight very frequent terms; binary often works better with linear margins on this dataset.
+Navigate to sentiment\_analysis and run test.py
 
 
 
-Stop-words: Removing common function words reduces noise and slightly improves binary-feature accuracy.
+Run experiments
 
 
 
-Reproducibility Checklist
+Execute main.py to print accuracies (Problem 7), run tuning (Problem 8), output final test accuracy, and list top unigrams
 
 
 
-Build vocabulary only from training data
+Feature variants
 
 
 
-Keep tokenizer consistent (course style: space around punctuation/digits, lowercase)
+Use binary or counts features and toggle stop-words in project1.py (dictionary is always built from training only)
 
 
 
-Use the same tuning grids as in main.py
+Technologies Used
 
 
 
-Use strict boundary in classify (> 0 ⇒ +1, else −1)
+Python, NumPy, matplotlib
 
 
 
-Quick Commands
+Anaconda for environment management
 
 
 
-Run tests: cd sentiment\_analysis \&\& python test.py
+Conclusion
 
 
 
-Run main: cd sentiment\_analysis \&\& python main.py
+Linear classifiers are strong baselines for text sentiment with BoW features.
 
 
 
-Add screenshots and push:
+Pegasos (with tuned T and λ) is robust and competitive.
 
 
 
-mkdir docs \&\& mkdir docs\\img
-
-
-
-copy PNGs into docs\\img
-
-
-
-git add docs\\img\\\*.png
-
-
-
-git commit -m "docs: add tests/plot screenshots"
-
-
-
-git push
-
-
-
-Close Environment \& Detach Git
-
-
-
-Close Anaconda session:
-
-
-
-conda deactivate
-
-
-
-exit
-
-
-
-Detach this repo from remote (optional):
-
-
-
-cd C:\\Users\\aniks\\my-project
-
-
-
-git remote -v
-
-
-
-git remote remove origin
-
-
-
-git remote -v (should be empty)
-
-
-
-Clear cached GitHub credentials (Windows):
-
-
-
-Control Panel → Credential Manager → Windows Credentials → remove github.com / git:https://github.com
+Simple interpretability via top weights provides actionable insight into learned signals.
 
