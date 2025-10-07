@@ -190,41 +190,21 @@ def classify(feature_matrix, theta, theta_0):
 
 
 
-def classifier_accuracy(
-        classifier,
-        train_feature_matrix,
-        val_feature_matrix,
-        train_labels,
-        val_labels,
-        **kwargs):
+def classifier_accuracy(classifier, train_feature_matrix, val_feature_matrix, train_labels, val_labels, **kwargs):
     """
-    Trains a linear classifier and computes accuracy.  The classifier is
-    trained on the train data.  The classifier's accuracy on the train and
-    validation data is then returned.
-
-    Args:
-        `classifier` - A learning function that takes arguments
-            (feature matrix, labels, **kwargs) and returns (theta, theta_0)
-        `train_feature_matrix` - A numpy matrix describing the training
-            data. Each row represents a single data point.
-        `val_feature_matrix` - A numpy matrix describing the validation
-            data. Each row represents a single data point.
-        `train_labels` - A numpy array where the kth element of the array
-            is the correct classification of the kth row of the training
-            feature matrix.
-        `val_labels` - A numpy array where the kth element of the array
-            is the correct classification of the kth row of the validation
-            feature matrix.
-        `kwargs` - Additional named arguments to pass to the classifier
-            (e.g. T or L)
-
-    Returns:
-        a tuple in which the first element is the (scalar) accuracy of the
-        trained classifier on the training data and the second element is the
-        accuracy of the trained classifier on the validation data.
+    Train the given classifier on the training set, then compute accuracy
+    on both train and validation sets. Extra hyperparameters (e.g., T, L)
+    are passed via **kwargs.
     """
-    # Your code here
-    raise NotImplementedError
+    # Train to get parameters
+    theta, theta_0 = classifier(train_feature_matrix, train_labels, **kwargs)
+
+    # Predict
+    train_preds = classify(train_feature_matrix, theta, theta_0)
+    val_preds   = classify(val_feature_matrix,   theta, theta_0)
+
+    # Use the provided accuracy() helper
+    return accuracy(train_preds, train_labels), accuracy(val_preds, val_labels)
 
 
 
